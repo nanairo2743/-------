@@ -1,0 +1,247 @@
+
+/*
+ g++ -std=c++11 kadai2.cpp `pkg-config --cflags --libs opencv4`
+ */
+#include <iostream>           //入出力関連ヘッダ
+#include <opencv2/opencv.hpp> //OpenCV関連ヘッダ
+
+// 顔色の変更
+void change_face_color(cv::Mat &faceImage, cv::Mat &hsvImage, cv::Rect rect)
+{
+    // 色解析しやすいようにHSV色空間に変換
+    cv::cvtColor(faceImage, hsvImage, cv::COLOR_BGR2HSV);
+
+    for (int j = rect.y; j < rect.y + rect.height; j++)
+    {
+        if (j < 0 || j >= hsvImage.rows)
+            continue;
+        for (int i = rect.x; i < rect.x + rect.width; i++)
+        {
+            if (i < 0 || i >= hsvImage.cols)
+                continue;
+            cv::Vec3b s = hsvImage.at<cv::Vec3b>(j, i);
+            hsvImage.at<cv::Vec3b>(j, i) = s;
+            // 肌色領域のみ変換
+            if (s[0] > 0 && s[0] < 50 &&
+                s[1] > 40 && s[1] < 255 &&
+                s[2] > 45 && s[2] < 255)
+            {
+                s[0] = 120;
+                hsvImage.at<cv::Vec3b>(j, i) = s;
+            }
+        }
+    }
+    cv::cvtColor(hsvImage, faceImage, cv::COLOR_HSV2BGR);
+}
+
+void change_face_beautiful(cv::Mat &faceImage, cv::Mat &hsvImage, cv::Rect rect)
+{
+    // 色解析しやすいようにHSV色空間に変換
+    cv::cvtColor(faceImage, hsvImage, cv::COLOR_BGR2HSV);
+
+    for (int j = rect.y; j < rect.y + rect.height; j++)
+    {
+        if (j < 0 || j >= hsvImage.rows)
+            continue;
+        for (int i = rect.x; i < rect.x + rect.width; i++)
+        {
+            if (i < 0 || i >= hsvImage.cols)
+                continue;
+            cv::Vec3b s = hsvImage.at<cv::Vec3b>(j, i);
+            hsvImage.at<cv::Vec3b>(j, i) = s;
+            // 肌色領域のみ変換
+            if (s[0] > 0 && s[0] < 50 &&
+                s[1] > 28 && s[1] < 255 &&
+                s[2] > 30 && s[2] < 255)
+            {
+                if (255 > s[1] + 20)
+                {
+                    s[1] = s[1] + 20;
+                }else {
+                    s[1] = 255;
+                }
+                if (255 > s[2] + 40)
+                {
+                    s[2] = s[2] + 40;
+                }else {
+                    s[2] = 255;
+                }
+
+                hsvImage.at<cv::Vec3b>(j, i) = s;
+            }
+        }
+    }
+    cv::cvtColor(hsvImage, faceImage, cv::COLOR_HSV2BGR);
+}
+
+void change_face_Anger(cv::Mat &faceImage, cv::Mat &hsvImage, cv::Rect rect)
+{
+    // 色解析しやすいようにHSV色空間に変換
+    cv::cvtColor(faceImage, hsvImage, cv::COLOR_BGR2HSV);
+
+    for (int j = rect.y; j < rect.y + rect.height; j++)
+    {
+        if (j < 0 || j >= hsvImage.rows)
+            continue;
+        for (int i = rect.x; i < rect.x + rect.width; i++)
+        {
+            if (i < 0 || i >= hsvImage.cols)
+                continue;
+            cv::Vec3b s = hsvImage.at<cv::Vec3b>(j, i);
+            hsvImage.at<cv::Vec3b>(j, i) = s;
+            // 肌色領域のみ変換
+            if (s[0] > 0 && s[0] < 50 &&
+                s[1] > 28 && s[1] < 255 &&
+                s[2] > 30 && s[2] < 255)
+            {
+                if (255 > s[1] + 50)
+                {
+                    s[1] = s[1] + 50;
+                }else {
+                    s[1] = 255;
+                }
+
+                hsvImage.at<cv::Vec3b>(j, i) = s;
+            }
+        }
+    }
+    cv::cvtColor(hsvImage, faceImage, cv::COLOR_HSV2BGR);
+}
+
+void change_face_sigeru(cv::Mat &faceImage, cv::Mat &hsvImage, cv::Rect rect)
+{
+    // 色解析しやすいようにHSV色空間に変換
+    cv::cvtColor(faceImage, hsvImage, cv::COLOR_BGR2HSV);
+
+    for (int j = rect.y; j < rect.y + rect.height; j++)
+    {
+        if (j < 0 || j >= hsvImage.rows)
+            continue;
+        for (int i = rect.x; i < rect.x + rect.width; i++)
+        {
+            if (i < 0 || i >= hsvImage.cols)
+                continue;
+            cv::Vec3b s = hsvImage.at<cv::Vec3b>(j, i);
+            hsvImage.at<cv::Vec3b>(j, i) = s;
+            // 肌色領域のみ変換
+            if (s[0] > 0 && s[0] < 50 &&
+                s[1] > 28 && s[1] < 255 &&
+                s[2] > 30 && s[2] < 255)
+            {
+                if (0 < s[2] - 100)
+                {
+                    s[2] = s[2] - 100;
+                }else {
+                    s[2] = 1;
+                }
+
+                hsvImage.at<cv::Vec3b>(j, i) = s;
+            }
+        }
+    }
+    cv::cvtColor(hsvImage, faceImage, cv::COLOR_HSV2BGR);
+}
+
+
+// main関数
+int main(int argc, char *argv[])
+{
+    // OpenCV初期設定処理
+    // カメラキャプチャの初期化
+    cv::VideoCapture capture = cv::VideoCapture(0);
+    if (capture.isOpened() == 0)
+    {
+        // カメラが見つからないときはメッセージを表示して終了
+        printf("Camera not found\n");
+        exit(1);
+    }
+
+    cv::Mat originalImage, frameImage, hsvImage, tempImage, beautifulImage,angerImage,sigeruImage;
+    cv::Size imageSize(720, 405);         // 画像サイズ
+    cv::CascadeClassifier faceClassifier; // 顔認識用分類器
+
+    // 3チャンネル画像"hsvImage"と"tempImage"の確保（ビデオと同サイズ）
+    hsvImage = cv::Mat(imageSize, CV_8UC3);
+    beautifulImage = cv::Mat(imageSize, CV_8UC3);
+    angerImage = cv::Mat(imageSize, CV_8UC3);
+    sigeruImage = cv::Mat(imageSize, CV_8UC3);
+    tempImage = cv::Mat(imageSize, CV_8UC3);
+
+    // OpenCVウィンドウ生成
+    cv::namedWindow("Frame");
+    cv::moveWindow("Frame", 0, 0);
+    cv::namedWindow("Face");
+    cv::moveWindow("Face", imageSize.width, 0);
+    cv::namedWindow("beautiful");
+    cv::moveWindow("beautiful", imageSize.width, 0);
+    cv::namedWindow("anger");
+    cv::moveWindow("anger", imageSize.width, 0);
+    cv::namedWindow("sigeru");
+    cv::moveWindow("sigeru", imageSize.width, 0);
+
+    // ①正面顔検出器の読み込み
+    faceClassifier.load("haarcascades/haarcascade_frontalface_default.xml");
+
+    while (1)
+    {
+        // ビデオキャプチャから1フレーム画像取得
+        capture >> originalImage;
+        cv::resize(originalImage, frameImage, imageSize);
+        cv::resize(originalImage, beautifulImage, imageSize);
+        cv::resize(originalImage, angerImage, imageSize);
+        cv::resize(originalImage, sigeruImage, imageSize);
+
+        // フレーム画像表示
+        cv::imshow("Frame", frameImage);
+
+        // ②検出情報を受け取るための配列を用意する
+        std::vector<cv::Rect> faces;
+
+        // ③画像中から検出対象の情報を取得する
+        faceClassifier.detectMultiScale(frameImage, faces, 1.1, 3, 0, cv::Size(20, 20));
+
+        // ④顔領域の検出
+        for (int i = 0; i < faces.size(); i++)
+        {
+            // 検出情報から顔の位置情報を取得
+            cv::Rect face = faces[i];
+            // 大きさによるチェック。
+            if (face.width * face.height < 100 * 100)
+            {
+                continue; // 小さい矩形は採用しない
+            }
+
+            face.x = std::max(face.x - 15, 0);
+            face.y = std::max(face.y - 15, 0);
+            face.width = std::min(face.width + 40, frameImage.cols - face.x);
+            face.height = std::min(face.height + 40, frameImage.rows - face.y);
+
+            // ⑤画像の加工
+            change_face_color(frameImage, hsvImage, face);
+            change_face_beautiful(beautifulImage, hsvImage, face);
+            change_face_Anger(angerImage, hsvImage, face);
+            change_face_sigeru(sigeruImage, hsvImage, face);
+
+            // 取得した顔の位置情報に基づき、矩形描画を行う
+            cv::rectangle(frameImage,
+                          cv::Point(face.x, face.y),
+                          cv::Point(face.x + face.width, face.y + face.height),
+                          CV_RGB(255, 0, 0),
+                          3, cv::LINE_AA);
+        }
+
+        // 認識結果画像表示
+        cv::imshow("Face", frameImage);
+        cv::imshow("beautiful", beautifulImage);
+        cv::imshow("anger", angerImage);
+        cv::imshow("sigeru", sigeruImage);
+
+        char key = cv::waitKey(10);
+        if (key == 'q')
+        {
+            break;
+        }
+    }
+
+    return 0;
+}
